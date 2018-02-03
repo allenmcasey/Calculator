@@ -305,7 +305,7 @@ public class Calculator extends JFrame {
 			}
 			
 			//The single-term-clear button. Only erases the last entered element
-			if (Integer.parseInt(e.getActionCommand()) == 13) {
+			if (Integer.parseInt(e.getActionCommand()) == 13 && counter > 0) {
 				console.setText(null);
 				expression[counter] = null;
 				int i = 0;
