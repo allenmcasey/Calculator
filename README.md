@@ -1,2 +1,6 @@
-# calculator
+# Calculator
+
 A simple calculator application with a GUI and basic arithmetic capabilities. 
+
+The methods buildNumberPanel() and buildOperationPanel() create the components that the buttons on the calculator are attached to. The private inner class NumberListener creates event listeners associated with the number buttons. The OperationListener class creates event listeners associated with the operators. Due to its length, here is a summary of the OperationListener class: When any operator except for the 'equals' button is selected, the symbol is added to the array and printed to the console. When the equals button is pressed, two loops are set in motion. The first loop iterates through the expression and finds instances of multiplication and division. When it finds one of those operators, it either multiplies or divides the terms on either side of it. These two terms get "simplified" into one term, which is stored in the index of the left term. The remainder of the array to the right is then moved to the left, effectively erasing the two terms and leaving only their result. This leaves the array containing only addition and subtraction. The second loop then iterates over the new array and evaluates the operations, storing the results in an accumulator. The result is then printed, and every element of the expression array is reset to null.
+
