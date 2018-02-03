@@ -176,7 +176,7 @@ public class Calculator extends JFrame {
 	private class NumberListener implements ActionListener {
 			
 		public void actionPerformed(ActionEvent e) {
-			System.out.print(e.getActionCommand());
+			System.out.print(e.getActionCommand() + " ");
 			if (expression[counter] == null)
 				expression[counter] = e.getActionCommand();
 			else
@@ -191,22 +191,22 @@ public class Calculator extends JFrame {
 			//Inserts operators into expression array when entered
 			if (Integer.parseInt(e.getActionCommand()) == 1) {
 				expression[++counter] = "+";
-				System.out.print(" + ");
+				System.out.print("+ ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 2) {
 				expression[++counter] = "-";
-				System.out.print(" - ");
+				System.out.print("- ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 3) {
 				expression[++counter] = "*";
-				System.out.print(" * ");
+				System.out.print("* ");
 				counter++;			
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 4) {
 				expression[++counter] = "/";
-				System.out.print(" / ");
+				System.out.print("/ ");
 				counter++;
 			}
 			
@@ -312,6 +312,7 @@ public class Calculator extends JFrame {
 				while (i < counter) {
 					System.out.print(expression[i++] + " ");
 				}
+				console--;
 			}
 		}
 	}
