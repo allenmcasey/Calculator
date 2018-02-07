@@ -134,7 +134,7 @@ public class Calculator extends JFrame {
 	private void buildOperationPanel() {
 		
 		operationPanel = new JPanel();
-		operationPanel.setLayout(new GridLayout(7, 1));
+		operationPanel.setLayout(new GridLayout(4, 2));
 		
 		JButton add = new JButton("+");
 		add.setActionCommand("1");
@@ -176,7 +176,10 @@ public class Calculator extends JFrame {
 	private class NumberListener implements ActionListener {
 			
 		public void actionPerformed(ActionEvent e) {
-			System.out.print(e.getActionCommand() + " ");
+			if(!e.getActionCommand().equals("-"))
+				System.out.print(e.getActionCommand() + " ");
+			else
+				System.out.print(e.getActionCommand());
 			if (expression[counter] == null)
 				expression[counter] = e.getActionCommand();
 			else
@@ -261,11 +264,11 @@ public class Calculator extends JFrame {
 						}
 					}
 					else
-						dex += 2;
+						dex ++;
 				}
 				
 				result = Double.parseDouble(expression[0]);
-				dex = 1;
+				dex = 0;
 				
 				//Steps through expression array and evaluates remaining addition and subtraction
 				while(dex < length) {
@@ -275,7 +278,7 @@ public class Calculator extends JFrame {
 								Double.parseDouble(expression[dex + 1]);
 						else
 							result += Double.parseDouble(expression[dex + 1]);
-						dex += 2;
+						dex ++;
 					}
 					else if(expression[dex].equals("-")) {
 						if (dex == 1)
@@ -283,10 +286,10 @@ public class Calculator extends JFrame {
 								Double.parseDouble(expression[dex + 1]);
 						else
 							result -= Double.parseDouble(expression[dex + 1]);
-						dex += 2;
+						dex ++;
 					}
 					else
-						dex += 2;
+						dex ++;
 				}
 				System.out.println(" = " + result);
 				//Expression is done being evaluated. Clear array for next use
@@ -312,7 +315,7 @@ public class Calculator extends JFrame {
 				while (i < counter) {
 					System.out.print(expression[i++] + " ");
 				}
-				console--;
+				counter--;
 			}
 		}
 	}
