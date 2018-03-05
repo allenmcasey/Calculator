@@ -1,5 +1,3 @@
-package calculator;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.io.*;
@@ -12,11 +10,11 @@ import java.awt.event.*;
 public class Calculator extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel numberPanel;				//the panel of numbers on GUI
-	private JPanel operationPanel;				//the panel of operators on GUI
+	private JPanel numberPanel;						//the panel of numbers on GUI
+	private JPanel operationPanel;					//the panel of operators on GUI
 	JTextArea console = new JTextArea(2, 10);		//The console on the calculator
-	private String[] expression = new String[20];		//the array in which the expression is stored
-	private int counter = 0;				//counter that correctly places each term of the expression in the array
+	private String[] expression = new String[20];	//the array in which the expression is stored
+	private int counter = 0;						//counter that places each term of the expression in the array
 	
 	public Calculator() {
 		
@@ -38,10 +36,10 @@ public class Calculator extends JFrame {
 		
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
-        	System.setOut(outStream);
-        	System.setErr(outStream);
+        System.setOut(outStream);
+        System.setErr(outStream);
 		
-        	add(console, BorderLayout.SOUTH);
+        add(console, BorderLayout.SOUTH);
 		add(numberPanel, BorderLayout.WEST);
 		add(operationPanel, BorderLayout.EAST);
 		
@@ -68,7 +66,6 @@ public class Calculator extends JFrame {
 
 		numberPanel = new JPanel();
 		numberPanel.setLayout(new GridLayout(3, 3));
-		
 		JButton one = new JButton("1");
 		one.setActionCommand("1");
 		one.addActionListener(new NumberListener());
@@ -159,7 +156,7 @@ public class Calculator extends JFrame {
 		JButton equals = new JButton("=");
 		equals.setActionCommand("10");
 		equals.addActionListener(new OperationListener());
-		operationPanel.add(equals);
+		operationPanel.add(equals); 
 		
 		JButton clearLast = new JButton("C");
 		clearLast.setActionCommand("13");
@@ -173,25 +170,29 @@ public class Calculator extends JFrame {
 	}
 
 	//Creates listeners for number buttons
-	private class NumberListener implements ActionListener {
+		private class NumberListener implements ActionListener {
 			
-		public void actionPerformed(ActionEvent e) {
-			if(!e.getActionCommand().equals("-"))
-				System.out.print(e.getActionCommand() + " ");
-			else
-				System.out.print(e.getActionCommand());
-			if (expression[counter] == null)
-				expression[counter] = e.getActionCommand();
-			else
-				expression[counter] += (e.getActionCommand());
+			public void actionPerformed(ActionEvent e) {
+				if(!e.getActionCommand().equals("-") && !e.getActionCommand().equals("."))
+					System.out.print(e.getActionCommand() + " ");
+				else if (e.getActionCommand().equals(".")) {
+					String expressionText = console.getText();
+					expressionText = expressionText.substring(0, expressionText.length() - 1);
+					console.setText(expressionText);
+					System.out.print(".");
+				}
+				else
+					System.out.print(e.getActionCommand());
+				if (expression[counter] == null)
+					expression[counter] = e.getActionCommand();
+				else
+					expression[counter] += (e.getActionCommand());
+			}
 		}
-	}
 		
 	//Creates listeners for operator buttons
 	private class OperationListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			
-			//Inserts operators into expression array when entered
 			if (Integer.parseInt(e.getActionCommand()) == 1) {
 				expression[++counter] = "+";
 				System.out.print("+ ");
@@ -212,6 +213,11 @@ public class Calculator extends JFrame {
 				System.out.print("/ ");
 				counter++;
 			}
+			if (Integer.parseInt(e.getActionCommand()) == 14) {
+				expression[++counter] = "s";
+				System.out.print("sqrt ");
+				counter++;
+			}
 			
 			//This is the "equals" button
 			if (Integer.parseInt(e.getActionCommand()) == 10){
@@ -226,7 +232,7 @@ public class Calculator extends JFrame {
 					dex++;
 				}
 	
-				dex = 1;	//begin stepping through at the first operator
+				dex = 0;	//begin stepping through at the first operator
 				
 				//checks for multiplication and division and evaluates
 				//stores each result in the index of the leftmost term, 
@@ -254,7 +260,7 @@ public class Calculator extends JFrame {
 						//find quotient of values to the left and right of the operator and
 						//store it in the place of left term
 						expression[dex - 1] = Double.toString(Double.parseDouble(expression[dex - 1]) 
-											/ Double.parseDouble(expression[dex + 1]));
+												/ Double.parseDouble(expression[dex + 1]));
 						
 						//move the rest of the equation to the left 
 						int i = dex + 2;
@@ -264,7 +270,7 @@ public class Calculator extends JFrame {
 						}
 					}
 					else
-						dex ++;
+						dex++;
 				}
 				
 				result = Double.parseDouble(expression[0]);
@@ -274,16 +280,14 @@ public class Calculator extends JFrame {
 				while(dex < length) {
 					if(expression[dex].equals("+")) {
 						if (dex == 1)
-							result = Double.parseDouble(expression[dex - 1]) + 
-								Double.parseDouble(expression[dex + 1]);
+							result = Double.parseDouble(expression[dex - 1]) + Double.parseDouble(expression[dex + 1]);
 						else
 							result += Double.parseDouble(expression[dex + 1]);
 						dex ++;
 					}
 					else if(expression[dex].equals("-")) {
 						if (dex == 1)
-							result = Double.parseDouble(expression[dex - 1]) - 
-								Double.parseDouble(expression[dex + 1]);
+							result = Double.parseDouble(expression[dex - 1]) - Double.parseDouble(expression[dex + 1]);
 						else
 							result -= Double.parseDouble(expression[dex + 1]);
 						dex ++;
@@ -299,7 +303,7 @@ public class Calculator extends JFrame {
 				counter = 0;
 			}
 			
-			//The clear all button. Clears array for next use
+			//The clear button. Clears array for next use
 			if (Integer.parseInt(e.getActionCommand()) == 11) {
 				for (int i = 0; i < expression.length; i++) {
 					expression[i] = null;
