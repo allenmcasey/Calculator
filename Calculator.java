@@ -295,7 +295,7 @@ public class Calculator extends JFrame {
 					else
 						dex ++;
 				}
-				System.out.println(" = " + result);
+				System.out.printf("= %.4f" , result);
 				//Expression is done being evaluated. Clear array for next use
 				for (int i = 0; i < expression.length; i++) {
 					expression[i] = null;
