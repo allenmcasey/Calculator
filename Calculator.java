@@ -36,10 +36,10 @@ public class Calculator extends JFrame {
 		
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
-        	System.setOut(outStream);
-        	System.setErr(outStream);
+        System.setOut(outStream);
+        System.setErr(outStream);
 		
-        	add(console, BorderLayout.SOUTH);
+        add(console, BorderLayout.SOUTH);
 		add(numberPanel, BorderLayout.WEST);
 		add(operationPanel, BorderLayout.EAST);
 		
@@ -158,6 +158,12 @@ public class Calculator extends JFrame {
 		equals.addActionListener(new OperationListener());
 		operationPanel.add(equals); 
 		
+		JButton squareRoot = new JButton("sqrt(x)");
+		squareRoot.setActionCommand("14");
+		squareRoot.addActionListener(new OperationListener());
+		operationPanel.add(squareRoot); 
+		
+		
 		JButton clearLast = new JButton("C");
 		clearLast.setActionCommand("13");
 		clearLast.addActionListener(new OperationListener());
@@ -214,7 +220,7 @@ public class Calculator extends JFrame {
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 14) {
-				expression[++counter] = "s";
+				expression[counter] = "s";
 				System.out.print("sqrt ");
 				counter++;
 			}
@@ -232,13 +238,29 @@ public class Calculator extends JFrame {
 					dex++;
 				}
 	
-				dex = 0;	//begin stepping through at the first operator
+				dex = 0;	//begin stepping through at beginning of expression
 				
-				//checks for multiplication and division and evaluates
+				//checks for square roots, then multiplication and division, and evaluates
 				//stores each result in the index of the leftmost term, 
 				//then resizes array to account for fewer terms (because two terms are simplified to one)
+				
+				//Finds sqrts first
 				while(dex < length - 1) {
+					if (expression[dex].equals("s")) {
+						length -= 1;
+						expression[dex] = Double.toString(Math.sqrt(Double.parseDouble(expression[dex + 1])));
+						int i = dex + 2;
+						while (expression[i] != null && i < expression.length - 1) {
+							expression[i - 1] = expression[i];
+							i++;
+						}
+					}
+					dex++;
+				}
+				
+				dex = 0;
 					
+				while(dex < length - 1) {
 					//if multiplication
 					if (expression[dex].equals("*")) {	
 						length -= 2;
@@ -295,6 +317,8 @@ public class Calculator extends JFrame {
 					else
 						dex ++;
 				}
+				
+				//Displays result of the completely evaluated expression
 				System.out.printf("= %.4f" , result);
 				//Expression is done being evaluated. Clear array for next use
 				for (int i = 0; i < expression.length; i++) {
@@ -321,6 +345,7 @@ public class Calculator extends JFrame {
 				}
 				counter--;
 			}
+			
 		}
 	}
 	
@@ -328,3 +353,4 @@ public class Calculator extends JFrame {
 		new Calculator();
 	}
 }
+
