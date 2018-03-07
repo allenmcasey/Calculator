@@ -10,11 +10,11 @@ import java.awt.event.*;
 public class Calculator extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel numberPanel;					//the panel of numbers on GUI
-	private JPanel operationPanel;					//the panel of operators on GUI
-	JTextArea console = new JTextArea(2, 10);			//The console on the calculator
-	private String[] expression = new String[20];			//the array in which the expression is stored
-	private int counter = 0;					//counter that places each term of the expression in the array
+	private JPanel numberPanel;				//the panel of numbers on GUI
+	private JPanel operationPanel;				//the panel of operators on GUI
+	JTextArea console = new JTextArea(2, 10);		//The console on the calculator
+	private String[] expression = new String[20];		//the array in which the expression is stored
+	private int counter = 0;				//counter that places each term of the expression in the array
 	
 	public Calculator() {
 		
@@ -36,10 +36,10 @@ public class Calculator extends JFrame {
 		
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
-        System.setOut(outStream);
-        System.setErr(outStream);
+        	System.setOut(outStream);
+        	System.setErr(outStream);
 		
-        add(console, BorderLayout.SOUTH);
+        	add(console, BorderLayout.SOUTH);
 		add(numberPanel, BorderLayout.WEST);
 		add(operationPanel, BorderLayout.EAST);
 		
@@ -138,15 +138,30 @@ public class Calculator extends JFrame {
 		add.addActionListener(new OperationListener());
 		operationPanel.add(add);
 		
+		JButton squareRoot = new JButton("sqrt(x)");
+		squareRoot.setActionCommand("14");
+		squareRoot.addActionListener(new OperationListener());
+		operationPanel.add(squareRoot); 
+		
 		JButton subtract = new JButton("-");
 		subtract.setActionCommand("2");
 		subtract.addActionListener(new OperationListener());
 		operationPanel.add(subtract);
 		
+		JButton clearLast = new JButton("C");
+		clearLast.setActionCommand("13");
+		clearLast.addActionListener(new OperationListener());
+		operationPanel.add(clearLast);
+		
 		JButton multiply = new JButton("*");
 		multiply.setActionCommand("3");
 		multiply.addActionListener(new OperationListener());
 		operationPanel.add(multiply);
+		
+		JButton clear = new JButton("CE");
+		clear.setActionCommand("11");
+		clear.addActionListener(new OperationListener());
+		operationPanel.add(clear);
 		
 		JButton divide = new JButton("/");
 		divide.setActionCommand("4");
@@ -158,21 +173,6 @@ public class Calculator extends JFrame {
 		equals.addActionListener(new OperationListener());
 		operationPanel.add(equals); 
 		
-		JButton squareRoot = new JButton("sqrt(x)");
-		squareRoot.setActionCommand("14");
-		squareRoot.addActionListener(new OperationListener());
-		operationPanel.add(squareRoot); 
-		
-		
-		JButton clearLast = new JButton("C");
-		clearLast.setActionCommand("13");
-		clearLast.addActionListener(new OperationListener());
-		operationPanel.add(clearLast);
-		
-		JButton clear = new JButton("CE");
-		clear.setActionCommand("11");
-		clear.addActionListener(new OperationListener());
-		operationPanel.add(clear);
 	}
 
 	//Creates listeners for number buttons
@@ -243,9 +243,8 @@ public class Calculator extends JFrame {
 				//checks for square roots, then multiplication and division, and evaluates
 				//stores each result in the index of the leftmost term, 
 				//then resizes array to account for fewer terms (because two terms are simplified to one)
-				
-				//Finds sqrts first
 				while(dex < length - 1) {
+					//Finds sqrts first
 					if (expression[dex].equals("s")) {
 						length -= 1;
 						expression[dex] = Double.toString(Math.sqrt(Double.parseDouble(expression[dex + 1])));
@@ -317,8 +316,6 @@ public class Calculator extends JFrame {
 					else
 						dex ++;
 				}
-				
-				//Displays result of the completely evaluated expression
 				System.out.printf("= %.4f" , result);
 				//Expression is done being evaluated. Clear array for next use
 				for (int i = 0; i < expression.length; i++) {
@@ -336,14 +333,15 @@ public class Calculator extends JFrame {
 			}
 			
 			//The single-term-clear button. Only erases the last entered element
-			if (Integer.parseInt(e.getActionCommand()) == 13 && counter > 0) {
+			if (Integer.parseInt(e.getActionCommand()) == 13 && counter >= 0) {
 				console.setText(null);
 				expression[counter] = null;
 				int i = 0;
 				while (i < counter) {
 					System.out.print(expression[i++] + " ");
 				}
-				counter--;
+				if (counter != 0)
+					counter--;
 			}
 			
 		}
@@ -353,4 +351,3 @@ public class Calculator extends JFrame {
 		new Calculator();
 	}
 }
-
