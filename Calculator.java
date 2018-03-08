@@ -10,11 +10,11 @@ import java.awt.event.*;
 public class Calculator extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel numberPanel;				//the panel of numbers on GUI
-	private JPanel operationPanel;				//the panel of operators on GUI
+	private JPanel numberPanel;						//the panel of numbers on GUI
+	private JPanel operationPanel;					//the panel of operators on GUI
 	JTextArea console = new JTextArea(2, 10);		//The console on the calculator
-	private String[] expression = new String[20];		//the array in which the expression is stored
-	private int counter = 0;				//counter that places each term of the expression in the array
+	private String[] expression = new String[20];	//the array in which the expression is stored
+	private int counter = 0;						//counter that places each term of the expression in the array
 	
 	public Calculator() {
 		
@@ -36,10 +36,10 @@ public class Calculator extends JFrame {
 		
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
-        	System.setOut(outStream);
-        	System.setErr(outStream);
+        System.setOut(outStream);
+        System.setErr(outStream);
 		
-        	add(console, BorderLayout.SOUTH);
+        add(console, BorderLayout.SOUTH);
 		add(numberPanel, BorderLayout.WEST);
 		add(operationPanel, BorderLayout.EAST);
 		
@@ -176,47 +176,37 @@ public class Calculator extends JFrame {
 	}
 
 	//Creates listeners for number buttons
-		private class NumberListener implements ActionListener {
-			
-			public void actionPerformed(ActionEvent e) {
-				if(!e.getActionCommand().equals("-") && !e.getActionCommand().equals("."))
-					System.out.print(e.getActionCommand() + " ");
-				else if (e.getActionCommand().equals(".")) {
-					String expressionText = console.getText();
-					expressionText = expressionText.substring(0, expressionText.length() - 1);
-					console.setText(expressionText);
-					System.out.print(".");
-				}
-				else
-					System.out.print(e.getActionCommand());
-				if (expression[counter] == null)
-					expression[counter] = e.getActionCommand();
-				else
-					expression[counter] += (e.getActionCommand());
-			}
+	private class NumberListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			System.out.print(e.getActionCommand());
+			if (expression[counter] == null)
+				expression[counter] = e.getActionCommand();
+			else
+				expression[counter] += (e.getActionCommand());
 		}
+	}
 		
 	//Creates listeners for operator buttons
 	private class OperationListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (Integer.parseInt(e.getActionCommand()) == 1) {
 				expression[++counter] = "+";
-				System.out.print("+ ");
+				System.out.print(" + ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 2) {
 				expression[++counter] = "-";
-				System.out.print("- ");
+				System.out.print(" - ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 3) {
 				expression[++counter] = "*";
-				System.out.print("* ");
+				System.out.print(" * ");
 				counter++;			
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 4) {
 				expression[++counter] = "/";
-				System.out.print("/ ");
+				System.out.print(" / ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 14) {
@@ -242,7 +232,7 @@ public class Calculator extends JFrame {
 				
 				//checks for square roots, then multiplication and division, and evaluates
 				//stores each result in the index of the leftmost term, 
-				//then resizes array to account for fewer terms (because two terms are simplified to one)
+				//then resizes array to account for fewer terms (because terms are simplified)
 				while(dex < length - 1) {
 					//Finds sqrts first
 					if (expression[dex].equals("s")) {
@@ -316,7 +306,12 @@ public class Calculator extends JFrame {
 					else
 						dex ++;
 				}
-				System.out.printf("= %.4f" , result);
+				//If there are no decimals print result. Else, format result before printing.
+				if (result % 1 == 0)
+					System.out.println(" = " + (int)result);
+				else
+					System.out.printf(" = %.4f" , result);
+				
 				//Expression is done being evaluated. Clear array for next use
 				for (int i = 0; i < expression.length; i++) {
 					expression[i] = null;
@@ -343,7 +338,6 @@ public class Calculator extends JFrame {
 				if (counter != 0)
 					counter--;
 			}
-			
 		}
 	}
 	
