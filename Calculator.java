@@ -10,11 +10,11 @@ import java.awt.event.*;
 public class Calculator extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel numberPanel;						//the panel of numbers on GUI
+	private JPanel numberPanel;					//the panel of numbers on GUI
 	private JPanel operationPanel;					//the panel of operators on GUI
-	JTextArea console = new JTextArea(2, 10);		//The console on the calculator
-	private String[] expression = new String[20];	//the array in which the expression is stored
-	private int counter = 0;						//counter that places each term of the expression in the array
+	JTextArea console = new JTextArea(2, 10);			//The console on the calculator
+	private String[] expression = new String[20];			//the array in which the expression is stored
+	private int counter = 0;					//counter that places each term of the expression in the array
 	
 	public Calculator() {
 		
@@ -36,10 +36,10 @@ public class Calculator extends JFrame {
 		
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
-        System.setOut(outStream);
-        System.setErr(outStream);
+        	System.setOut(outStream);
+        	System.setErr(outStream);
 		
-        add(console, BorderLayout.SOUTH);
+        	add(console, BorderLayout.SOUTH);
 		add(numberPanel, BorderLayout.WEST);
 		add(operationPanel, BorderLayout.EAST);
 		
