@@ -1,3 +1,5 @@
+package calculator;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.io.*;
@@ -10,11 +12,12 @@ import java.awt.event.*;
 public class Calculator extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel numberPanel;					//the panel of numbers on GUI
+	private JPanel numberPanel;						//the panel of numbers on GUI
 	private JPanel operationPanel;					//the panel of operators on GUI
-	JTextArea console = new JTextArea(2, 10);			//The console on the calculator
-	private String[] expression = new String[20];			//the array in which the expression is stored
-	private int counter = 0;					//counter that places each term of the expression in the array
+	private JPanel trigPanel;						//the panel of trig buttons on GUI
+	JTextArea console = new JTextArea(2, 10);		//The console on the calculator
+	private String[] expression = new String[20];	//the array in which the expression is stored
+	private int counter = 0;						//counter that places each term of the expression in the array
 	
 	public Calculator() {
 		
@@ -24,9 +27,8 @@ public class Calculator extends JFrame {
 		setLayout(new BorderLayout());
 		
 		buildNumberPanel();
-		add(numberPanel);
 		buildOperationPanel();
-		add(operationPanel);
+		buildTrigPanel();
 		
 		
 		//Styles calculator console with a border
@@ -36,12 +38,13 @@ public class Calculator extends JFrame {
 		
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
-        	System.setOut(outStream);
-        	System.setErr(outStream);
+        System.setOut(outStream);
+        System.setErr(outStream);
 		
-        	add(console, BorderLayout.SOUTH);
-		add(numberPanel, BorderLayout.WEST);
+        add(console, BorderLayout.SOUTH);
+		add(numberPanel, BorderLayout.CENTER);
 		add(operationPanel, BorderLayout.EAST);
+		add(trigPanel, BorderLayout.WEST);
 		
 		pack();
 		setVisible(true);
@@ -174,17 +177,39 @@ public class Calculator extends JFrame {
 		operationPanel.add(equals); 
 		
 	}
+	
+	private void buildTrigPanel() {
+		
+		trigPanel = new JPanel();
+		trigPanel.setLayout(new GridLayout(3, 1));
+		
+		JButton sin = new JButton("sin(x)");
+		sin.setActionCommand("15");
+		sin.addActionListener(new OperationListener());
+		trigPanel.add(sin); 
+		
+		JButton cos = new JButton("cos(x)");
+		cos.setActionCommand("16");
+		cos.addActionListener(new OperationListener());
+		trigPanel.add(cos); 
+		
+		JButton tan = new JButton("tan(x)");
+		tan.setActionCommand("17");
+		tan.addActionListener(new OperationListener());
+		trigPanel.add(tan); 
+	}
 
 	//Creates listeners for number buttons
-	private class NumberListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			System.out.print(e.getActionCommand());
-			if (expression[counter] == null)
-				expression[counter] = e.getActionCommand();
-			else
-				expression[counter] += (e.getActionCommand());
+		private class NumberListener implements ActionListener {
+			
+			public void actionPerformed(ActionEvent e) {
+				System.out.print(e.getActionCommand());
+				if (expression[counter] == null)
+					expression[counter] = e.getActionCommand();
+				else
+					expression[counter] += (e.getActionCommand());
+			}
 		}
-	}
 		
 	//Creates listeners for operator buttons
 	private class OperationListener implements ActionListener {
@@ -194,6 +219,7 @@ public class Calculator extends JFrame {
 				System.out.print(" + ");
 				counter++;
 			}
+			
 			if (Integer.parseInt(e.getActionCommand()) == 2) {
 				expression[++counter] = "-";
 				System.out.print(" - ");
@@ -212,6 +238,21 @@ public class Calculator extends JFrame {
 			if (Integer.parseInt(e.getActionCommand()) == 14) {
 				expression[counter] = "s";
 				System.out.print("sqrt ");
+				counter++;
+			}
+			if (Integer.parseInt(e.getActionCommand()) == 15) {
+				expression[counter] = "sin";
+				System.out.print("sin ");
+				counter++;
+			}
+			if (Integer.parseInt(e.getActionCommand()) == 16) {
+				expression[counter] = "cos";
+				System.out.print("cos ");
+				counter++;
+			}
+			if (Integer.parseInt(e.getActionCommand()) == 17) {
+				expression[counter] = "tan";
+				System.out.print("tan ");
 				counter++;
 			}
 			
@@ -238,6 +279,33 @@ public class Calculator extends JFrame {
 					if (expression[dex].equals("s")) {
 						length -= 1;
 						expression[dex] = Double.toString(Math.sqrt(Double.parseDouble(expression[dex + 1])));
+						int i = dex + 2;
+						while (expression[i] != null && i < expression.length - 1) {
+							expression[i - 1] = expression[i];
+							i++;
+						}
+					}
+					else if (expression[dex].equals("sin")) {
+						length -= 1;
+						expression[dex] = Double.toString(Math.sin(Math.toRadians(Double.parseDouble(expression[dex + 1]))));
+						int i = dex + 2;
+						while (expression[i] != null && i < expression.length - 1) {
+							expression[i - 1] = expression[i];
+							i++;
+						}
+					}
+					else if (expression[dex].equals("cos")) {
+						length -= 1;
+						expression[dex] = Double.toString(Math.cos(Math.toRadians(Double.parseDouble(expression[dex + 1]))));
+						int i = dex + 2;
+						while (expression[i] != null && i < expression.length - 1) {
+							expression[i - 1] = expression[i];
+							i++;
+						}
+					}
+					else if (expression[dex].equals("tan")) {
+						length -= 1;
+						expression[dex] = Double.toString(Math.tan(Math.toRadians(Double.parseDouble(expression[dex + 1]))));
 						int i = dex + 2;
 						while (expression[i] != null && i < expression.length - 1) {
 							expression[i - 1] = expression[i];
@@ -338,6 +406,7 @@ public class Calculator extends JFrame {
 				if (counter != 0)
 					counter--;
 			}
+			
 		}
 	}
 	
