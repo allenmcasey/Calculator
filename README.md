@@ -10,5 +10,7 @@ There is a negative sign (-) button on the interface that allows the user to cha
 
 There is a sqrt(x) button. This, along with the subsequent number, should be entered as if they were a single term or else an error will result.
 
+On the left side of the GUI are the trig. buttons. sin, cos, and tan all evaluate doubles in degree form.
+
 There are two different clear buttons: a CE and a C. CE is a clear all button which wipes clean the expression array and clears the calculator's console. C only clears the previously entered term of the expression, be it an operator or a number.
 
