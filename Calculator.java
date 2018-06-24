@@ -3,6 +3,7 @@ package calculator;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.io.*;
+import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -16,7 +17,7 @@ public class Calculator extends JFrame {
 	private JPanel operationPanel;					//the panel of operators on GUI
 	private JPanel trigPanel;					//the panel of trig buttons on GUI
 	JTextArea console = new JTextArea(2, 10);			//The console on the calculator
-	private String[] expression = new String[20];			//the array in which the expression is stored
+	private ArrayList<String> expression = new ArrayList<>();	//the array in which the expression is stored
 	private int counter = 0;					//counter that places each term of the expression in the array
 	
 	public Calculator() {
@@ -204,10 +205,10 @@ public class Calculator extends JFrame {
 			
 			public void actionPerformed(ActionEvent e) {
 				System.out.print(e.getActionCommand());
-				if (expression[counter] == null)
-					expression[counter] = e.getActionCommand();
+				if (counter > expression.size() - 1)
+					expression.add(e.getActionCommand());
 				else
-					expression[counter] += (e.getActionCommand());
+					expression.set(counter, expression.get(counter) + e.getActionCommand());
 			}
 		}
 		
@@ -215,43 +216,43 @@ public class Calculator extends JFrame {
 	private class OperationListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (Integer.parseInt(e.getActionCommand()) == 1) {
-				expression[++counter] = "+";
+				expression.add("+");
 				System.out.print(" + ");
-				counter++;
+				counter += 2;
 			}
 			
 			if (Integer.parseInt(e.getActionCommand()) == 2) {
-				expression[++counter] = "-";
+				expression.add("-");
 				System.out.print(" - ");
-				counter++;
+				counter += 2;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 3) {
-				expression[++counter] = "*";
+				expression.add("*");
 				System.out.print(" * ");
-				counter++;			
+				counter += 2;			
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 4) {
-				expression[++counter] = "/";
+				expression.add("/");
 				System.out.print(" / ");
-				counter++;
+				counter += 2;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 14) {
-				expression[counter] = "s";
+				expression.add("s");
 				System.out.print("sqrt ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 15) {
-				expression[counter] = "sin";
+				expression.add("sin");
 				System.out.print("sin ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 16) {
-				expression[counter] = "cos";
+				expression.add("cos");
 				System.out.print("cos ");
 				counter++;
 			}
 			if (Integer.parseInt(e.getActionCommand()) == 17) {
-				expression[counter] = "tan";
+				expression.add("tan");
 				System.out.print("tan ");
 				counter++;
 			}
@@ -261,114 +262,78 @@ public class Calculator extends JFrame {
 		
 				int dex = 0;  		//index that steps through expression array
 				double result = 0;	//the current result of the expression   
-				int length = 0;		//the length of the expression
 				
-				//gets length of expression
-				while (expression[dex] != null && dex < expression.length) {
-					length++;
-					dex++;
-				}
-	
-				dex = 0;	//begin stepping through at beginning of expression
+				dex = 0;		//begin stepping through at beginning of expression
 				
 				//checks for square roots, then multiplication and division, and evaluates
 				//stores each result in the index of the leftmost term, 
 				//then resizes array to account for fewer terms (because terms are simplified)
-				while(dex < length - 1) {
-					//Finds sqrts first
-					if (expression[dex].equals("s")) {
-						length -= 1;
-						expression[dex] = Double.toString(Math.sqrt(Double.parseDouble(expression[dex + 1])));
-						int i = dex + 2;
-						while (expression[i] != null && i < expression.length - 1) {
-							expression[i - 1] = expression[i];
-							i++;
-						}
+				while(dex < expression.size() - 1) {
+					//Finds square roots first
+					if (expression.get(dex).equals("s")) {
+						expression.set(dex, Double.toString(Math.sqrt(Double.parseDouble(expression.get(dex + 1)))));
+						expression.remove(dex + 1);
 					}
-					else if (expression[dex].equals("sin")) {
-						length -= 1;
-						expression[dex] = Double.toString(Math.sin(Math.toRadians(Double.parseDouble(expression[dex + 1]))));
-						int i = dex + 2;
-						while (expression[i] != null && i < expression.length - 1) {
-							expression[i - 1] = expression[i];
-							i++;
-						}
+					else if (expression.get(dex).equals("sin")) {
+						expression.set(dex, Double.toString(Math.sin(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
+						expression.remove(dex + 1);
 					}
-					else if (expression[dex].equals("cos")) {
-						length -= 1;
-						expression[dex] = Double.toString(Math.cos(Math.toRadians(Double.parseDouble(expression[dex + 1]))));
-						int i = dex + 2;
-						while (expression[i] != null && i < expression.length - 1) {
-							expression[i - 1] = expression[i];
-							i++;
-						}
+					else if (expression.get(dex).equals("cos")) {
+						expression.set(dex, Double.toString(Math.cos(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
+						expression.remove(dex + 1);
 					}
-					else if (expression[dex].equals("tan")) {
-						length -= 1;
-						expression[dex] = Double.toString(Math.tan(Math.toRadians(Double.parseDouble(expression[dex + 1]))));
-						int i = dex + 2;
-						while (expression[i] != null && i < expression.length - 1) {
-							expression[i - 1] = expression[i];
-							i++;
-						}
+					else if (expression.get(dex).equals("tan")) {
+						expression.set(dex, Double.toString(Math.tan(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
+						expression.remove(dex + 1);
 					}
 					dex++;
 				}
 				
 				dex = 0;
 					
-				while(dex < length - 1) {
+				while(dex < expression.size() - 1) {
 					//if multiplication
-					if (expression[dex].equals("*")) {	
-						length -= 2;
+					if (expression.get(dex).equals("*")) {	
 						//find product of values to the left and right of the operator and
 						//store it in the place of left term
-						expression[dex - 1] = Double.toString(Double.parseDouble(expression[dex - 1]) 
-												* Double.parseDouble(expression[dex + 1]));
+						expression.set(dex - 1, Double.toString(Double.parseDouble(expression.get(dex - 1)) 
+												* Double.parseDouble(expression.get(dex + 1))));
 						//move the rest of the equation to the left 
-						int i = dex + 2;
-						while (expression[i] != null && i < expression.length) {
-							expression[i - 2] = expression[i];
-							i++;
-						}
+						expression.remove(dex + 1);
+						expression.remove(dex);
 					}
 					
 					//if division
-					else if (expression[dex].equals("/")) {
-						length -= 2;
-						//find quotient of values to the left and right of the operator and
+					else if (expression.get(dex).equals("/")) {	
+						//find product of values to the left and right of the operator and
 						//store it in the place of left term
-						expression[dex - 1] = Double.toString(Double.parseDouble(expression[dex - 1]) 
-												/ Double.parseDouble(expression[dex + 1]));
-						
+						expression.set(dex - 1, Double.toString(Double.parseDouble(expression.get(dex - 1)) 
+												/ Double.parseDouble(expression.get(dex + 1))));
 						//move the rest of the equation to the left 
-						int i = dex + 2;
-						while (expression[i] != null && i < expression.length) {
-							expression[i - 2] = expression[i];
-							i++;
-						}
+						expression.remove(dex + 1);
+						expression.remove(dex);
 					}
 					else
 						dex++;
 				}
 				
-				result = Double.parseDouble(expression[0]);
+				result = Double.parseDouble(expression.get(0));
 				dex = 0;
 				
 				//Steps through expression array and evaluates remaining addition and subtraction
-				while(dex < length) {
-					if(expression[dex].equals("+")) {
+				while(dex < expression.size()) {
+					if(expression.get(dex).equals("+")) {
 						if (dex == 1)
-							result = Double.parseDouble(expression[dex - 1]) + Double.parseDouble(expression[dex + 1]);
+							result = Double.parseDouble(expression.get(dex - 1)) + Double.parseDouble(expression.get(dex + 1));
 						else
-							result += Double.parseDouble(expression[dex + 1]);
+							result += Double.parseDouble(expression.get(dex + 1));
 						dex ++;
 					}
-					else if(expression[dex].equals("-")) {
+					else if(expression.get(dex).equals("-")) {
 						if (dex == 1)
-							result = Double.parseDouble(expression[dex - 1]) - Double.parseDouble(expression[dex + 1]);
+							result = Double.parseDouble(expression.get(dex - 1)) - Double.parseDouble(expression.get(dex + 1));
 						else
-							result -= Double.parseDouble(expression[dex + 1]);
+							result -= Double.parseDouble(expression.get(dex + 1));
 						dex ++;
 					}
 					else
@@ -377,32 +342,26 @@ public class Calculator extends JFrame {
 				//If there are no decimals print result. Else, format result before printing.
 				if (result % 1 == 0)
 					System.out.println(" = " + (int)result);
-				else
-					System.out.printf(" = %.4f" , result);
-				
+				else 
+					System.out.printf(" = %.4f\n" , result);
+
 				//Expression is done being evaluated. Clear array for next use
-				for (int i = 0; i < expression.length; i++) {
-					expression[i] = null;
-				}
+				expression.clear();
 				counter = 0;
 			}
 			
 			//The clear button. Clears array for next use
 			if (Integer.parseInt(e.getActionCommand()) == 11) {
-				for (int i = 0; i < expression.length; i++) {
-					expression[i] = null;
-				}
+				expression.clear();
 				console.setText(null);
 			}
 			
 			//The single-term-clear button. Only erases the last entered element
 			if (Integer.parseInt(e.getActionCommand()) == 13 && counter >= 0) {
 				console.setText(null);
-				expression[counter] = null;
-				int i = 0;
-				while (i < counter) {
-					System.out.print(expression[i++] + " ");
-				}
+				expression.remove(counter); 
+				for (String s : expression)
+					System.out.print(s + " ");
 				if (counter != 0)
 					counter--;
 			}
