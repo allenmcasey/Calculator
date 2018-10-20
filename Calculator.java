@@ -39,10 +39,10 @@ public class Calculator extends JFrame {
 		
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
-        	System.setOut(outStream);
-       		System.setErr(outStream);
+        System.setOut(outStream);
+       	System.setErr(outStream);
 		
-       		add(console, BorderLayout.SOUTH);
+       	add(console, BorderLayout.SOUTH);
 		add(numberPanel, BorderLayout.CENTER);
 		add(operationPanel, BorderLayout.EAST);
 		add(trigPanel, BorderLayout.WEST);
@@ -202,15 +202,16 @@ public class Calculator extends JFrame {
 	}
 
 	//Creates listeners for number buttons
-	private class NumberListener implements ActionListener {			
-		public void actionPerformed(ActionEvent e) {
-			System.out.print(e.getActionCommand());
-			if (counter > expression.size() - 1)
-				expression.add(e.getActionCommand());
-			else
-				expression.set(counter, expression.get(counter) + e.getActionCommand());
+		private class NumberListener implements ActionListener {
+			
+			public void actionPerformed(ActionEvent e) {
+				System.out.print(e.getActionCommand());
+				if (counter > expression.size() - 1)
+					expression.add(e.getActionCommand());
+				else
+					expression.set(counter, expression.get(counter) + e.getActionCommand());
+			}
 		}
-	}
 		
 	//Creates listeners for operator buttons
 	private class OperationListener implements ActionListener {
@@ -259,47 +260,52 @@ public class Calculator extends JFrame {
 			
 			//This is the "equals" button
 			if (Integer.parseInt(e.getActionCommand()) == 10){
+				
+				if(expression.size() != 0) {
+					try {
 		
-				int dex = 0;  		//index that steps through expression array
-				double result = 0;	//the current result of the expression   
-				
-				dex = 0;		//begin stepping through at beginning of expression
-				
-				
-				//evaluate radicals and trig first
-				while(dex < expression.size() - 1) {
-					evaluateRadicalsAndTrig(dex);
-					dex++;
-				}
-				
-				dex = 0;
+						int dex = 0;  		//index that steps through expression array  
+						
+						//evaluate radicals and trig first
+						while(dex < expression.size() - 1) {
+							evaluateRadicalsAndTrig(dex);
+							dex++;
+						}
+						
+						dex = 0;
+							
+						//evaluate multiplication and division
+						while(dex < expression.size() - 1) {
+							if (expression.get(dex).equals("*") || expression.get(dex).equals("/"))
+								evaluateMultiAndDiv(dex);
+							else
+								dex++;
+						}
+						
+						double result = Double.parseDouble(expression.get(0));
+						dex = 0;
+						
+						//Steps through expression array and evaluates remaining addition and subtraction
+						while(dex < expression.size()) {
+							result = evaluateAddAndSub(dex, result);
+							dex ++;
+						}
+						
+						//PRINT Result. If decimal, format
+						if (result % 1 == 0)
+							System.out.println(" = " + (int)result);
+						else 
+							System.out.printf(" = %.4f\n" , result);
+		
+						//Expression is done being evaluated. Clear array for next use
+						expression.clear();
+						counter = 0;
+					}
 					
-				//evaluate multiplication and division
-				while(dex < expression.size() - 1) {
-					if (expression.get(dex).equals("*") || expression.get(dex).equals("/"))
-						evaluateMultiAndDiv(dex);
-					else
-						dex++;
+					catch (Exception error) {
+						System.out.println("	--SYNTAX ERROR--");
+					}
 				}
-				
-				result = Double.parseDouble(expression.get(0));
-				dex = 0;
-				
-				//Steps through expression array and evaluates remaining addition and subtraction
-				while(dex < expression.size()) {
-					result = evaluateAddAndSub(dex, result);
-					dex ++;
-				}
-				
-				//PRINT Result. If decimal, format
-				if (result % 1 == 0)
-					System.out.println(" = " + (int)result);
-				else 
-					System.out.printf(" = %.4f\n" , result);
-
-				//Expression is done being evaluated. Clear array for next use
-				expression.clear();
-				counter = 0;
 			}
 			
 			//The clear button. Clears array for next use
@@ -372,15 +378,13 @@ public class Calculator extends JFrame {
 		public double evaluateAddAndSub(int dex, double result) {
 			if(expression.get(dex).equals("+")) {
 				if (dex == 1)
-					result = Double.parseDouble(expression.get(dex - 1)) 
-					 	+ Double.parseDouble(expression.get(dex + 1));
+					result = Double.parseDouble(expression.get(dex - 1)) + Double.parseDouble(expression.get(dex + 1));
 				else
 					result += Double.parseDouble(expression.get(dex + 1));
 			}
 			else if(expression.get(dex).equals("-")) {
 				if (dex == 1)
-					result = Double.parseDouble(expression.get(dex - 1)) 
-						- Double.parseDouble(expression.get(dex + 1));
+					result = Double.parseDouble(expression.get(dex - 1)) - Double.parseDouble(expression.get(dex + 1));
 				else
 					result -= Double.parseDouble(expression.get(dex + 1));
 			}
@@ -393,3 +397,4 @@ public class Calculator extends JFrame {
 		new Calculator();
 	}
 }
+
