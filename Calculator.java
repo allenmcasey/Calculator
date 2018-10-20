@@ -40,9 +40,9 @@ public class Calculator extends JFrame {
 		//Creates an output stream and redirects all output to the GUI JTextArea
 		PrintStream outStream = new PrintStream(new TextAreaOutputStream(console));
         	System.setOut(outStream);
-        	System.setErr(outStream);
+       		System.setErr(outStream);
 		
-        	add(console, BorderLayout.SOUTH);
+       		add(console, BorderLayout.SOUTH);
 		add(numberPanel, BorderLayout.CENTER);
 		add(operationPanel, BorderLayout.EAST);
 		add(trigPanel, BorderLayout.WEST);
@@ -179,6 +179,7 @@ public class Calculator extends JFrame {
 		
 	}
 	
+	//builds trig buttons
 	private void buildTrigPanel() {
 		
 		trigPanel = new JPanel();
@@ -201,16 +202,15 @@ public class Calculator extends JFrame {
 	}
 
 	//Creates listeners for number buttons
-		private class NumberListener implements ActionListener {
-			
-			public void actionPerformed(ActionEvent e) {
-				System.out.print(e.getActionCommand());
-				if (counter > expression.size() - 1)
-					expression.add(e.getActionCommand());
-				else
-					expression.set(counter, expression.get(counter) + e.getActionCommand());
-			}
+	private class NumberListener implements ActionListener {			
+		public void actionPerformed(ActionEvent e) {
+			System.out.print(e.getActionCommand());
+			if (counter > expression.size() - 1)
+				expression.add(e.getActionCommand());
+			else
+				expression.set(counter, expression.get(counter) + e.getActionCommand());
 		}
+	}
 		
 	//Creates listeners for operator buttons
 	private class OperationListener implements ActionListener {
@@ -265,54 +265,19 @@ public class Calculator extends JFrame {
 				
 				dex = 0;		//begin stepping through at beginning of expression
 				
-				//checks for square roots, then multiplication and division, and evaluates
-				//stores each result in the index of the leftmost term, 
-				//then resizes array to account for fewer terms (because terms are simplified)
+				
+				//evaluate radicals and trig first
 				while(dex < expression.size() - 1) {
-					//Finds square roots first
-					if (expression.get(dex).equals("s")) {
-						expression.set(dex, Double.toString(Math.sqrt(Double.parseDouble(expression.get(dex + 1)))));
-						expression.remove(dex + 1);
-					}
-					else if (expression.get(dex).equals("sin")) {
-						expression.set(dex, Double.toString(Math.sin(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
-						expression.remove(dex + 1);
-					}
-					else if (expression.get(dex).equals("cos")) {
-						expression.set(dex, Double.toString(Math.cos(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
-						expression.remove(dex + 1);
-					}
-					else if (expression.get(dex).equals("tan")) {
-						expression.set(dex, Double.toString(Math.tan(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
-						expression.remove(dex + 1);
-					}
+					evaluateRadicalsAndTrig(dex);
 					dex++;
 				}
 				
 				dex = 0;
 					
+				//evaluate multiplication and division
 				while(dex < expression.size() - 1) {
-					//if multiplication
-					if (expression.get(dex).equals("*")) {	
-						//find product of values to the left and right of the operator and
-						//store it in the place of left term
-						expression.set(dex - 1, Double.toString(Double.parseDouble(expression.get(dex - 1)) 
-												* Double.parseDouble(expression.get(dex + 1))));
-						//move the rest of the equation to the left 
-						expression.remove(dex + 1);
-						expression.remove(dex);
-					}
-					
-					//if division
-					else if (expression.get(dex).equals("/")) {	
-						//find product of values to the left and right of the operator and
-						//store it in the place of left term
-						expression.set(dex - 1, Double.toString(Double.parseDouble(expression.get(dex - 1)) 
-												/ Double.parseDouble(expression.get(dex + 1))));
-						//move the rest of the equation to the left 
-						expression.remove(dex + 1);
-						expression.remove(dex);
-					}
+					if (expression.get(dex).equals("*") || expression.get(dex).equals("/"))
+						evaluateMultiAndDiv(dex);
 					else
 						dex++;
 				}
@@ -322,24 +287,11 @@ public class Calculator extends JFrame {
 				
 				//Steps through expression array and evaluates remaining addition and subtraction
 				while(dex < expression.size()) {
-					if(expression.get(dex).equals("+")) {
-						if (dex == 1)
-							result = Double.parseDouble(expression.get(dex - 1)) + Double.parseDouble(expression.get(dex + 1));
-						else
-							result += Double.parseDouble(expression.get(dex + 1));
-						dex ++;
-					}
-					else if(expression.get(dex).equals("-")) {
-						if (dex == 1)
-							result = Double.parseDouble(expression.get(dex - 1)) - Double.parseDouble(expression.get(dex + 1));
-						else
-							result -= Double.parseDouble(expression.get(dex + 1));
-						dex ++;
-					}
-					else
-						dex ++;
+					result = evaluateAddAndSub(dex, result);
+					dex ++;
 				}
-				//If there are no decimals print result. Else, format result before printing.
+				
+				//PRINT Result. If decimal, format
 				if (result % 1 == 0)
 					System.out.println(" = " + (int)result);
 				else 
@@ -366,6 +318,74 @@ public class Calculator extends JFrame {
 					counter--;
 			}
 			
+		}
+		
+		public void evaluateRadicalsAndTrig(int dex) {
+			
+			//evaluate a radical
+			if (expression.get(dex).equals("s")) {
+				expression.set(dex, Double.toString(Math.sqrt(Double.parseDouble(expression.get(dex + 1)))));
+				expression.remove(dex + 1);
+			}
+			
+			//evaluate trig functions
+			else if (expression.get(dex).equals("sin")) {
+				expression.set(dex, Double.toString(Math.sin(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
+				expression.remove(dex + 1);
+			}
+			else if (expression.get(dex).equals("cos")) {
+				expression.set(dex, Double.toString(Math.cos(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
+				expression.remove(dex + 1);
+			}
+			else if (expression.get(dex).equals("tan")) {
+				expression.set(dex, Double.toString(Math.tan(Math.toRadians(Double.parseDouble(expression.get(dex + 1))))));
+				expression.remove(dex + 1);
+			}
+		}
+		
+		public void evaluateMultiAndDiv(int dex) {
+			
+			//evaluate multiplication
+			if (expression.get(dex).equals("*")) {	
+				//find product of values to the left and right of the operator and
+				//store it in the place of left term
+				expression.set(dex - 1, Double.toString(Double.parseDouble(expression.get(dex - 1)) 
+										* Double.parseDouble(expression.get(dex + 1))));
+				//move the rest of the equation to the left 
+				expression.remove(dex + 1);
+				expression.remove(dex);
+			}
+			
+			//evaluate division
+			else if (expression.get(dex).equals("/")) {	
+				//find product of values to the left and right of the operator and
+				//store it in the place of left term
+				expression.set(dex - 1, Double.toString(Double.parseDouble(expression.get(dex - 1)) 
+										/ Double.parseDouble(expression.get(dex + 1))));
+				//move the rest of the equation to the left 
+				expression.remove(dex + 1);
+				expression.remove(dex);
+			}
+		}
+		
+		//evaluate addition and subtraction
+		public double evaluateAddAndSub(int dex, double result) {
+			if(expression.get(dex).equals("+")) {
+				if (dex == 1)
+					result = Double.parseDouble(expression.get(dex - 1)) 
+					 	+ Double.parseDouble(expression.get(dex + 1));
+				else
+					result += Double.parseDouble(expression.get(dex + 1));
+			}
+			else if(expression.get(dex).equals("-")) {
+				if (dex == 1)
+					result = Double.parseDouble(expression.get(dex - 1)) 
+						- Double.parseDouble(expression.get(dex + 1));
+				else
+					result -= Double.parseDouble(expression.get(dex + 1));
+			}
+			
+			return result;
 		}
 	}
 	
